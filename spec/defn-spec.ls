@@ -55,8 +55,7 @@ describe 'defn' ->
       that 'can call anything' ->
         expect fn.can-call 1 .to.be.true
       that 'calling redirects to the defined fn' ->
-        fn 1
-        expect spy .to.have.been.called
+        fn 1; expect spy .to.have.been.called
 
     describe '#define fn with @ inside' ->
       var impl
@@ -92,3 +91,10 @@ describe 'defn' ->
           '*': spy.default := sinon.spy!
       that 'signatures are Number, String, *' ->
         expect fn.signatures! .to.eql <[(Number) (String) (*)]>
+      describe 'the right implementation is called' ->
+        that 'for a number' ->
+          fn 1; expect spy.number .to.have.been.called
+        that 'for a string' ->
+          fn \1; expect spy.string .to.have.been.called
+        that 'for anything else' ->
+          fn []; expect spy.default .to.have.been.called
