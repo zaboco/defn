@@ -10,8 +10,10 @@ class Defs
   add: -> switch typeof! &0
     | \Function => @add-default &0
     | \String => @add-one &0, &1
+    | \Object => @add-more &0
   add-default: (fn) -> @fns['(*)'] = fn
   add-one: (sig, fn) -> @fns[ensure-tuple sig] = fn
+  add-more: (map) -> for sig, fn of map then @add-one sig, fn
   get: (sig) -> @fns[ensure-tuple sig]
   contains: (sig) -> (@get sig)?
 

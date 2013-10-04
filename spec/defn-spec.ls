@@ -82,3 +82,13 @@ describe 'defn' ->
         expect fn.can-call \2 .to.be.false
       that 'calling something else throws error' ->
         expect fn .called-with \2 .to.throw 'Unimplemented: fn requires one of (Number)'
+
+    describe '#define more' ->
+      spy = {}
+      before-each ->
+        fn.define do
+          Number: spy.number := sinon.spy!
+          String: spy.string := sinon.spy!
+          '*': spy.default := sinon.spy!
+      that 'signatures are Number, String, *' ->
+        expect fn.signatures! .to.eql <[(Number) (String) (*)]>
