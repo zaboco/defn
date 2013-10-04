@@ -2,8 +2,11 @@ require! {
   '../src/defn'
   \chai
   \chai-signature
+  \sinon
+  \sinon-chai
 }
 chai.use chai-signature
+chai.use sinon-chai
 expect = chai.expect
 
 /*
@@ -39,10 +42,10 @@ describe 'defn' ->
     that 'has method #apply' ->
       expect fn.apply .to.be.a \Function
 
-    describe '#define one w/o type' ->
-      var impl
+    describe '#define one w/o signature' ->
+      var spy
       before-each ->
-        fn.define impl := -> it
+        fn.define spy := sinon.spy!
       that 'signatures is [(*)]' ->
         expect fn.signatures! .to.eql <[ (*) ]>
       that 'has signature (*)' ->
@@ -52,7 +55,8 @@ describe 'defn' ->
       that 'can call anything' ->
         expect fn.can-call 1 .to.be.true
       that 'calling redirects to the defined fn' ->
-        expect fn 1 .to.eql 1
+        fn 1
+        expect spy .to.have.been.called
 
     describe '#define fn with @ inside' ->
       var impl
@@ -63,11 +67,18 @@ describe 'defn' ->
       that 'can use with Function.apply' ->
         expect fn.apply \x, [1] .to.eql "x:1"
 
-    describe '#define one w/ type' ->
-      var impl
+    describe '#define one w/ signature' ->
       before-each ->
-        fn.define \Number, impl := (n) -> n + 1
+        fn.define \Number (n) -> n + 1
       that 'signatures is [(Number)]' ->
         expect fn.signatures! .to.eql <[ (Number) ]>
-      that.skip 'has signature (Number)' ->
+      that 'has signature (Number)' ->
         expect fn.has-signature '(Number)' .to.be.true
+      that 'has signature Number' ->
+        expect fn.has-signature 'Number' .to.be.true
+      that 'can call a number' ->
+        expect fn.can-call 1 .to.be.true
+      that 'cannot call anything else' ->
+        expect fn.can-call \2 .to.be.false
+      that 'calling something else throws error' ->
+        expect fn .called-with \2 .to.throw 'Unimplemented: fn requires one of (Number)'

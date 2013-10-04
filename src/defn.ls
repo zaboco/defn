@@ -1,7 +1,8 @@
 require! \type-check .type-check
 {keys, find} = require \prelude-ls
 
-function ensure-tuple then it.replace /^([^(].*)/ "($1)"
+function ensure-tuple (signature='')
+  signature.replace /^([^(].*)/ "($1)"
 
 class Defs
   -> @fns = {}
@@ -14,8 +15,11 @@ class Defs
   get: (sig) -> @fns[ensure-tuple sig]
   contains: (sig) -> (@get sig)?
 
+  throw-unimplemented: ->
+    throw new Error "Unimplemented: fn requires one of #{@signatures}"
   signature-of: (args)-> @signatures |> find type-check _, args
-  get-impl-for: (args) -> @get @signature-of args
+  get-impl-for: (args) ->
+    @get @signature-of args or @throw-unimplemented!
   apply: (obj, args) -> (@get-impl-for args).apply obj, args
 
 class Defn
@@ -23,7 +27,7 @@ class Defn
   signatures: -> @__defs__.signatures
   has-signature: -> @__defs__.contains it
   can-call: (...args) -> (@__defs__.signature-of args)?
-  define: -> @__defs__.add it
+  define: -> @__defs__.add &0, &1
   apply: (obj, args) -> @__defs__.apply obj, args
   call: (obj, ...args) -> @__defs__.apply obj, args
 
@@ -34,7 +38,8 @@ init = ->
   main-fn <<<< new Defn
 
 defn = ->
-  init ...
+  fn = init!
+  fn.define ...
 
 defn.init = init
 
