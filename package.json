@@ -18,7 +18,8 @@
     "chai": "~1.8.0",
     "sinon": "~1.7.3",
     "sinon-chai": "~2.4.0",
-    "chai-signature": "~0.1.0"
+    "chai-signature": "~0.1.0",
+    "better-stack-traces": "~1.0.0"
   },
   "main": "lib/index.js",
   "scripts": {

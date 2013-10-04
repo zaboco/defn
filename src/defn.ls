@@ -29,7 +29,7 @@ class Defn
   signatures: -> @__defs__.signatures
   has-signature: -> @__defs__.contains it
   can-call: (...args) -> (@__defs__.signature-of args)?
-  define: -> @__defs__.add &0, &1
+  define: -> @__defs__.add &0, &1; @
   apply: (obj, args) -> @__defs__.apply obj, args
   call: (obj, ...args) -> @__defs__.apply obj, args
 
@@ -39,9 +39,9 @@ init = ->
 
   main-fn <<<< new Defn
 
-defn = ->
+defn = (...args) ->
   fn = init!
-  fn.define ...
+  fn.define.apply fn, args
 
 defn.init = init
 

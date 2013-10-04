@@ -2,8 +2,9 @@
 var typeCheck, ref$, keys, find, Defs, Defn, init, defn, toString$ = {}.toString, slice$ = [].slice;
 typeCheck = require('type-check').typeCheck;
 ref$ = require('prelude-ls'), keys = ref$.keys, find = ref$.find;
-function ensureTuple(it){
-  return it.replace(/^([^(].*)/, "($1)");
+function ensureTuple(signature){
+  signature == null && (signature = '');
+  return signature.replace(/^([^(].*)/, "($1)");
 }
 Defs = (function(){
   Defs.displayName = 'Defs';
@@ -24,6 +25,8 @@ Defs = (function(){
       return this.addDefault(arguments[0]);
     case 'String':
       return this.addOne(arguments[0], arguments[1]);
+    case 'Object':
+      return this.addMore(arguments[0]);
     }
   };
   prototype.addDefault = function(fn){
@@ -32,19 +35,29 @@ Defs = (function(){
   prototype.addOne = function(sig, fn){
     return this.fns[ensureTuple(sig)] = fn;
   };
+  prototype.addMore = function(map){
+    var sig, fn, results$ = [];
+    for (sig in map) {
+      fn = map[sig];
+      results$.push(this.addOne(sig, fn));
+    }
+    return results$;
+  };
   prototype.get = function(sig){
     return this.fns[ensureTuple(sig)];
   };
   prototype.contains = function(sig){
-    console.log("[" + ensureTuple(sig) + "]");
     return this.get(sig) != null;
+  };
+  prototype.throwUnimplemented = function(){
+    throw new Error("Unimplemented: fn requires one of " + this.signatures);
   };
   prototype.signatureOf = function(args){
     return find(partialize$.apply(this, [typeCheck, [void 8, args], [0]]))(
     this.signatures);
   };
   prototype.getImplFor = function(args){
-    return this.get(this.signatureOf(args));
+    return this.get(this.signatureOf(args)) || this.throwUnimplemented();
   };
   prototype.apply = function(obj, args){
     return this.getImplFor(args).apply(obj, args);
@@ -68,8 +81,9 @@ Defn = (function(){
     args = slice$.call(arguments);
     return this.__defs__.signatureOf(args) != null;
   };
-  prototype.define = function(it){
-    return this.__defs__.add(it);
+  prototype.define = function(){
+    this.__defs__.add(arguments[0], arguments[1]);
+    return this;
   };
   prototype.apply = function(obj, args){
     return this.__defs__.apply(obj, args);
@@ -91,7 +105,10 @@ init = function(){
   return importAll$(mainFn, new Defn);
 };
 defn = function(){
-  return init.apply(this, arguments);
+  var args, fn;
+  args = slice$.call(arguments);
+  fn = init();
+  return fn.define.apply(fn, args);
 };
 defn.init = init;
 module.exports = defn;

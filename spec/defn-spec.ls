@@ -5,6 +5,10 @@ require! {
   \sinon
   \sinon-chai
 }
+require "better-stack-traces" .install do
+  before: 2
+  after: 2
+
 chai.use chai-signature
 chai.use sinon-chai
 expect = chai.expect
@@ -98,7 +102,27 @@ describe 'defn.init' ->
       that 'for anything else' ->
         fn []; expect spy.default .to.have.been.called
 
-  # describe 'it chains' ->
+describe 'defn' ->
+  var fn, spy
+  that 'works' ->
+    fn := defn spy := sinon.spy!
+    fn 1; expect spy .to.have.been.called-with 1
+  describe 'chain' ->
+    before-each ->
+      fn := defn 'Number' -> 1
+        .define 'String' -> \s
+        .define '[*]' -> \array
+    that 'has Number signature' ->
+      expect fn.has-signature \Number .to.be.true
+    that 'has String signature' ->
+      expect fn.has-signature \String .to.be.true
+    that 'has Array in signature' ->
+      expect fn.has-signature '[*]' .to.be.true
+    that 'can call a number' ->
+      expect fn.can-call 0 .to.be.true
+    that 'call to array works' ->
+      expect fn [1 \1] .to.eql \array
+
   # describe 'can define' ->
   #   var fn
   #   that 'dictionary' ->
