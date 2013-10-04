@@ -23,12 +23,12 @@ describe 'defn' ->
   describe 'after init' ->
     var fn
     before-each -> fn := defn.init!
-    that 'has signatures property' ->
-      expect fn .to.have.property \signatures
-    that 'responds to #has-signature' ->
-      expect fn .itself.to.respond-to \hasSignature
+    that 'has method #signatures' ->
+      expect fn.signatures .to.be.a \Function
+    that 'has method #has-signature' ->
+      expect fn.has-signature .to.be.a \Function
     that 'has no signatures' ->
-      expect fn.signatures .to.be.empty
+      expect fn.signatures! .to.be.empty
       expect fn.has-signature \* .to.be.false
     that 'responds to #can-call' ->
       expect fn .itself.to.respond-to \canCall
@@ -40,5 +40,13 @@ describe 'defn' ->
       before-each ->
         impl := -> it
         fn.define impl
-      that.skip 'signatures is [(*)]' ->
-        expect fn.signatures .to.eql <[ (*) ]>
+      that 'signatures is [(*)]' ->
+        expect fn.signatures! .to.eql <[ (*) ]>
+      that 'has signature (*)' ->
+        expect fn.has-signature '(*)' .to.be.true
+      that 'has signature *' ->
+        expect fn.has-signature '*' .to.be.true
+      that 'can call anything' ->
+        expect fn.can-call 1 .to.be.true
+      that 'calling redirects to the defined fn' ->
+        expect fn 1 .to.eql 1
