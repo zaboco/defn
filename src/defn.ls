@@ -8,22 +8,23 @@ class Defs
   signatures:~ -> keys @fns
   add: (fn) -> @fns['(*)'] = fn
   get: (sig) -> @fns[ensure-tuple sig]
-  contain: (sig) -> (@get sig)?
+  contains: (sig) -> (@get sig)?
   signature-of: (args)-> @signatures |> find type-check _, args
   get-impl-for: (args) -> @get @signature-of args
-  apply-for: (args) -> (@get-impl-for args).apply @, args
+  apply: (obj, args) -> (@get-impl-for args).apply obj, args
 
 class Defn
   -> @__defs__ = new Defs
   signatures: -> @__defs__.signatures
-  has-signature: -> @__defs__.contain it
+  has-signature: -> @__defs__.contains it
   can-call: (...args) -> (@__defs__.signature-of args)?
   define: -> @__defs__.add it
-  call-for: (...args) -> @__defs__.apply-for args
+  apply: (obj, args) -> @__defs__.apply obj, args
+  call: (obj, ...args) -> @__defs__.apply obj, args
 
 init = ->
   main-fn = (...args) ->
-    main-fn.call-for.apply main-fn, args
+    main-fn.apply @, args
 
   main-fn <<<< new Defn
 

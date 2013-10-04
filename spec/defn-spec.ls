@@ -30,16 +30,19 @@ describe 'defn' ->
     that 'has no signatures' ->
       expect fn.signatures! .to.be.empty
       expect fn.has-signature \* .to.be.false
-    that 'responds to #can-call' ->
-      expect fn .itself.to.respond-to \canCall
+    that 'has method #can-call' ->
+      expect fn.can-call .to.be.a \Function
     that 'cannot call anything' ->
       expect fn.can-call void .to.be.false
+    that 'has method #call' ->
+      expect fn.call .to.be.a \Function
+    that 'has method #apply' ->
+      expect fn.apply .to.be.a \Function
 
     describe '#define one w/o type' ->
       var impl
       before-each ->
-        impl := -> it
-        fn.define impl
+        fn.define impl := -> it
       that 'signatures is [(*)]' ->
         expect fn.signatures! .to.eql <[ (*) ]>
       that 'has signature (*)' ->
@@ -50,3 +53,12 @@ describe 'defn' ->
         expect fn.can-call 1 .to.be.true
       that 'calling redirects to the defined fn' ->
         expect fn 1 .to.eql 1
+
+    describe '#define fn with @ inside' ->
+      var impl
+      before-each ->
+        fn.define impl := -> "#@:#it"
+      that 'can use with Function.call' ->
+        expect fn.call \x, 1 .to.eql "x:1"
+      that 'can use with Function.apply' ->
+        expect fn.apply \x, [1] .to.eql "x:1"
