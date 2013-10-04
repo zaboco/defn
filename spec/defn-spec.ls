@@ -62,3 +62,12 @@ describe 'defn' ->
         expect fn.call \x, 1 .to.eql "x:1"
       that 'can use with Function.apply' ->
         expect fn.apply \x, [1] .to.eql "x:1"
+
+    describe '#define one w/ type' ->
+      var impl
+      before-each ->
+        fn.define \Number, impl := (n) -> n + 1
+      that 'signatures is [(Number)]' ->
+        expect fn.signatures! .to.eql <[ (Number) ]>
+      that.skip 'has signature (Number)' ->
+        expect fn.has-signature '(Number)' .to.be.true

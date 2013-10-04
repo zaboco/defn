@@ -6,9 +6,14 @@ function ensure-tuple then it.replace /^([^(].*)/ "($1)"
 class Defs
   -> @fns = {}
   signatures:~ -> keys @fns
-  add: (fn) -> @fns['(*)'] = fn
+  add: -> switch typeof! &0
+    | \Function => @add-default &0
+    | \String => @add-one &0, &1
+  add-default: (fn) -> @fns['(*)'] = fn
+  add-one: (sig, fn) -> @fns[ensure-tuple sig] = fn
   get: (sig) -> @fns[ensure-tuple sig]
   contains: (sig) -> (@get sig)?
+
   signature-of: (args)-> @signatures |> find type-check _, args
   get-impl-for: (args) -> @get @signature-of args
   apply: (obj, args) -> (@get-impl-for args).apply obj, args
