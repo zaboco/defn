@@ -3,3 +3,4 @@ src/*.js
 spec/*.js
 node_modules
 *.sublime-workspace
+temp
