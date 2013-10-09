@@ -3,7 +3,7 @@ require!{
   \type-check
 }
 
-{compare-types, cp, compare-lists-with: clw} = require '../src/type-precedence'
+{compare-types} = require '../src/type-precedence'
 {reverse, all, sort-with} = require \prelude-ls
 {expect} = chai
 {type-check, parse-type: pt} = type-check
@@ -43,3 +43,11 @@ describe 'compare-types' ->
     describe 'recursive' ->
       that 'one' -> expect compare-types '(*)', '(Object)' .to.eql 1
       that 'more' -> expect compare-types '(*, *)', '(*, String)' .to.eql 1
+  describe 'multiple types' ->
+    that 'best match wins' ->
+      expect compare-types 'Object | Array | String', 'Number | {x: *}', {x: 1} .to.eql 1
+      expect compare-types 'Object | Array | String', 'Number | {x: *} | *', [1] .to.eql -1
+    that 'first match wins when equal' ->
+      expect compare-types 'String | Number', 'Number | String', \s .to.eql -1
+      expect compare-types 'String | Number', 'Number | String', 21 .to.eql 1
+
