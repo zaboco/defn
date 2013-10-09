@@ -35,11 +35,11 @@ different-size-subsets = (a, b) ->
 both-are-arrays = (a, b) ->
   (typeof! a) is (typeof! b) is \Array
 
-both = (a, b, have-same: property, value) ->
+both = (a, b, have: property, value) ->
   a[property] is b[property] is (value ? a[property])
 
 both-are-structure = (structure, a, b) ->
-  both a, b, have-same: \structure, structure
+  both a, b, have: \structure, structure
 
 compare-all-fields-values = (a, b) ->
   compare-lists-with compare-parsed, (values a.of), (values b.of)
@@ -63,7 +63,7 @@ compare-indexes = (la, lb, matching: target) ->
   compare indexes
 
 compare-parsed = (a, b, target) ->
-  | both-are-arrays a, b and both a, b, have-same: \length, 1 => compare-parsed a.0, b.0
+  | both-are-arrays a, b and both a, b, have: \length, 1 => compare-parsed a.0, b.0
   | both-are-arrays a, b and sign = compare-bests a, b, matching: target => sign
   | both-are-arrays a, b => compare-indexes a, b, matching: target
   | a.type? and b.type? => compare-parsed a.type, b.type
