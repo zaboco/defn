@@ -1,4 +1,8 @@
-require! \type-check .type-check
+require! {
+  \type-check .type-check
+  './type-precedence' .best-type
+}
+
 {keys, find} = require \prelude-ls
 
 function ensure-tuple (signature='')
@@ -19,7 +23,7 @@ class Defs
 
   throw-unimplemented: ->
     throw new Error "Unimplemented: fn requires one of #{@signatures}"
-  signature-of: (args)-> @signatures |> find type-check _, args
+  signature-of: (args)-> best-type in: @signatures, matching: args
   get-impl-for: (args) ->
     @get @signature-of args or @throw-unimplemented!
   apply: (obj, args) -> (@get-impl-for args).apply obj, args

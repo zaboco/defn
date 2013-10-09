@@ -3,10 +3,10 @@ require!{
   \type-check
 }
 
-{compare-types} = require '../src/type-precedence'
+{compare-types, best-type} = require '../src/type-precedence'
 {reverse, all, sort-with} = require \prelude-ls
 {expect} = chai
-{type-check, parse-type: pt} = type-check
+{type-check, parse-type} = type-check
 
 ok = chai.assert.ok
 that = it
@@ -30,7 +30,7 @@ describe 'compare-types' ->
       expect compare-types '{x: Number, ...}', '{...}' .to.eql -1
     describe 'recursive' ->
       that 'fixed' ->
-        expect compare-types '{x: String}', '{x: *}' .to.eql -1
+        expect compare-types 'Object{x: String}', '{x: *}' .to.eql -1
         expect compare-types '{x: String, y: *}', '{x: *, y: Number}' .to.eql 0
       that 'subset' ->
         expect compare-types '{x: String, ...}', '{x: *, ...}' .to.eql -1
@@ -52,4 +52,14 @@ describe 'compare-types' ->
     that 'first match wins when equal' ->
       expect compare-types 'String | Number', 'Number | String', \s .to.eql -1
       expect compare-types 'String | Number', 'Number | String', 21 .to.eql 1
+    that 'Maybe also works' ->
+      expect compare-types 'Number', 'Maybe Number' .to.eql -1
+      expect compare-types 'Maybe [Number]', 'Maybe Array' .to.eql -1
+      expect compare-types 'Maybe Number | String', 'Maybe String | Number', 1 .to.eql -1
+      expect compare-types 'Maybe Null', 'Null' .to.eql 1
 
+describe 'best-type' ->
+  that 'no target' ->
+    expect best-type in: ['(Array)', '(*)', '([*])'] .to.eql '([*])'
+  that 'with target' ->
+    expect best-type in: ['Number | String', 'String | Number'], matching: \s .to.eql 'String | Number'

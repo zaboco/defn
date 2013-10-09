@@ -18,7 +18,7 @@ compare = ([a, b]) -->
 compare-by = (comparator, [a, b]) -->
   compare [(comparator a), (comparator b)]
 
-maximum-with = (comparator, list) -->
+minimum-with = (comparator, list) -->
   first sort-with comparator, list
 
 # assumes lists same size
@@ -47,12 +47,12 @@ compare-all-fields-values = (a, b) ->
 compare-all-tuple-items = (a, b) ->
   compare-lists-with compare-parsed, a.of, b.of
 
-best-type = (in: list, matching: target) ->
-  matching-types = filter (-> parsed-type-check [it], target), list
-  maximum-with compare-parsed, matching-types
+best-parsed-type = (in: parsed-types, matching: target) ->
+  parsed-types = filter (-> parsed-type-check [it], target), parsed-types if target
+  minimum-with compare-parsed, parsed-types
 
 compare-bests = (la, lb, matching: target) ->
-  sign = compare-parsed (best-type in: la, matching: target), (best-type in: lb, matching: target)
+  sign = compare-parsed (best-parsed-type in: la, matching: target), (best-parsed-type in: lb, matching: target)
   return if sign then sign else false  # compare otherwise if equal
 
 index-of-match = (list, target) ->
@@ -67,8 +67,9 @@ compare-parsed = (a, b, target) ->
   | both-are-arrays a, b and sign = compare-bests a, b, matching: target => sign
   | both-are-arrays a, b => compare-indexes a, b, matching: target
   | a.type? and b.type? => compare-parsed a.type, b.type
-  | sign = check-order of: [a, b], using: [(.structure?), (.type?)] => sign
+  | sign = check-order of: [a, b], using: [(.structure?), (.type? and not it.structure?)] => sign
   | sign = check-order of: [a, b], using: [(not) << (.subset), (.subset)] => sign
+  | sign = check-order of: [a, b], using: [(is \Null), (is \Undefined)] => sign
   | sign = check-order of: [a, b], using: [__, (is \*)] => sign
   | different-size-subsets a, b => [a, b] |> compare-by -> -(n-keys it.of)
   | both-are-structure \array, a, b => compare-parsed a.of, b.of
@@ -90,9 +91,8 @@ compare-types = (ta, tb, target) ->
   [pa, pb] = map parse-type, [ta, tb]
   compare-parsed pa, pb, target
 
-module.exports = {compare-types}
+best-type = (in: types, matching: target) ->
+  types = filter (-> type-check it, target), types if target
+  minimum-with (compare-types _, _, target), types
 
-STRUCT_PREC = 30
-TYPE_PREC = 40
-SUBSET_PREC = 50
-WILDCARD_PREC = 100
+module.exports = {compare-types, best-type}

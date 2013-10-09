@@ -122,8 +122,10 @@ describe 'defn' ->
       expect fn.can-call 0 .to.be.true
     that 'call to array works' ->
       expect fn [1 \1] .to.eql \array
-
-  # describe 'can define' ->
-  #   var fn
-  #   that 'dictionary' ->
-  #     fn :=
+  describe 'signature precedence' ->
+    before-each ->
+      fn := defn do
+        '*': -> \other
+        'Number': -> \number
+    that 'calls most specific match' ->
+      expect fn 1 .to.eql \number
