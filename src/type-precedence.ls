@@ -91,8 +91,11 @@ compare-types = (ta, tb, target) ->
   [pa, pb] = map parse-type, [ta, tb]
   compare-parsed pa, pb, target
 
-best-type = (in: types, matching: target) ->
-  types = filter (-> type-check it, target), types if target
-  minimum-with (compare-types _, _, target), types
+sort-types = (types, {matching}={}) ->
+  types = filter (-> type-check it, matching), types if matching
+  sort-with (compare-types _, _, matching), types
 
-module.exports = {compare-types, best-type}
+best-type = (in: types, matching: target) ->
+  first sort-types types, matching: target
+
+module.exports = {compare-types, best-type, sort-types}

@@ -3,7 +3,7 @@ require!{
   \type-check
 }
 
-{compare-types, best-type} = require '../src/type-precedence'
+{compare-types, best-type, sort-types} = require '../src/type-precedence'
 {reverse, all, sort-with} = require \prelude-ls
 {expect} = chai
 {type-check, parse-type} = type-check
@@ -63,3 +63,7 @@ describe 'best-type' ->
     expect best-type in: ['(Array)', '(*)', '([*])'] .to.eql '([*])'
   that 'with target' ->
     expect best-type in: ['Number | String', 'String | Number'], matching: \s .to.eql 'String | Number'
+
+describe 'sort-types' ->
+  that 'works' ->
+    expect sort-types ['(Array)', '(*)', '([*])'], matching: [[1]] .to.eql ['([*])', '(Array)', '(*)']
