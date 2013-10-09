@@ -11,19 +11,6 @@ require!{
 ok = chai.assert.ok
 that = it
 
-
-function suite types, target, {equal=false} = {}
-  that 'all types match target' ->
-    expect all (type-check _, target), types .to.be.true
-
-  that "#{types.0} precedes #{types.1}" ->
-    first-prec = precedence types.0
-    second-prec = precedence types.1
-    switch
-      | equal => expect first-prec, target .to.eql second-prec, target
-      | _ => expect first-prec, target .to.be.lt second-prec, target
-
-
 describe 'compare-types' ->
   describe 'wildcard' ->
     that 'first' -> expect compare-types \*, \String .to.eql 1
@@ -39,4 +26,7 @@ describe 'compare-types' ->
       expect compare-types '{...}', '{x: Number}' .to.eql 1
     that 'subset partially specified vs none' ->
       expect compare-types '{x: Number, ...}', '{...}' .to.eql -1
+  describe 'array' ->
+    that 'generic vs explicit' ->
+      expect compare-types '[*]', 'Array' .to.eql -1
 

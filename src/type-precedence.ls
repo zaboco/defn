@@ -21,7 +21,7 @@ compare-by = (fn, [a, b]) -->
 
 
 compare-parsed = (...[a, b]:args) ->
-  | (typeof! a) is \Array => compare-parsed a.0, b.0
+  | (typeof! a) is (typeof! b) is \Array => compare-parsed a.0, b.0
   | a.type? and b.type? => compare-parsed a.type, b.type
   | sign = check-order of: args, using: [(.structure?), (.type?)] => sign
   | sign = check-order of: args, using: [(not) << (.subset), (.subset)] => sign
