@@ -10,13 +10,13 @@ check-order = (of: [a, b], using: [pa, pb]) ->
   | pa b and pb a => 1
   | _ => false
 
-compare = ([a, b]) -->
+compare = (a, b) ->
   | a < b => -1
   | a > b => 1
   | _ => 0
 
-compare-by = (comparator, [a, b]) -->
-  compare [(comparator a), (comparator b)]
+compare-by = (comparator, a, b) -->
+  compare (comparator a), (comparator b)
 
 minimum-with = (comparator, list) -->
   first sort-with comparator, list
@@ -60,7 +60,7 @@ index-of-match = (list, target) ->
 
 compare-indexes = (la, lb, matching: target) ->
   indexes = map (index-of-match _, target), [la, lb]
-  compare indexes
+  compare ...indexes
 
 compare-parsed = (a, b, target) ->
   | both-are-arrays a, b and both a, b, have: \length, 1 => compare-parsed a.0, b.0
@@ -71,7 +71,7 @@ compare-parsed = (a, b, target) ->
   | sign = check-order of: [a, b], using: [(not) << (.subset), (.subset)] => sign
   | sign = check-order of: [a, b], using: [(is \Null), (is \Undefined)] => sign
   | sign = check-order of: [a, b], using: [__, (is \*)] => sign
-  | different-size-subsets a, b => [a, b] |> compare-by -> -(n-keys it.of)
+  | different-size-subsets a, b => compare-by (-> -n-keys it.of), a, b
   | both-are-structure \array, a, b => compare-parsed a.of, b.of
   | both-are-structure \fields, a, b => compare-all-fields-values a, b
   | both-are-structure \tuple, a, b => compare-all-tuple-items a, b
