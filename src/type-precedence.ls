@@ -1,5 +1,5 @@
-{all, sort-with, sort-by, first, find, filter, map, zip-with, values} = require \prelude-ls
-{parse-type: pt, parsed-type-check} = require \type-check
+{any, all, first, find, filter, map, sort-by, sort-with, values, zip-with} = require \prelude-ls
+{parse-type, parsed-type-check, type-check} = require \type-check
 
 __ = -> true # wildcard, matches anything in check-order
 
@@ -76,8 +76,19 @@ compare-parsed = (a, b, target) ->
   | both-are-structure \tuple, a, b => compare-all-tuple-items a, b
   | _ => 0
 
+type-mismatch = (t, target) ->
+  not type-check t, target
+
+throw-mismatch-error = (t, target) ->
+  throw new Error "<#target> does not match <#t>"
+
+validate-types = (types, against: target) ->
+  for t in types then throw-mismatch-error t, target if type-mismatch t, target
+
 compare-types = (ta, tb, target) ->
-  compare-parsed (pt ta), (pt tb), target
+  validate-types [ta, tb], against: target if target
+  [pa, pb] = map parse-type, [ta, tb]
+  compare-parsed pa, pb, target
 
 module.exports = {compare-types}
 

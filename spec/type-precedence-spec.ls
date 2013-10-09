@@ -12,6 +12,8 @@ ok = chai.assert.ok
 that = it
 
 describe 'compare-types' ->
+  that 'throws Error when one of types does not match target' ->
+    expect (-> compare-types \String, \Number, 1) .to.throw /<1> does not match <String>/
   describe 'wildcard' ->
     that 'first' -> expect compare-types \*, \String .to.eql 1
     that 'second' -> expect compare-types \String, \* .to.eql -1
