@@ -1,7 +1,4 @@
-require! {
-  \type-check .type-check
-  './type-precedence' .best-type
-}
+require! './type-precedence' .best-type
 
 {keys, find} = require \prelude-ls
 
