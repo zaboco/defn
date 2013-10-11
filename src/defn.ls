@@ -4,7 +4,7 @@ function ensure-tuple (signature='')
   signature.replace /^([^(].*)/ "($1)"
 
 function ensure-valid (signature='') then switch
-  | signature in <[... [*]]> => '[*]'
+  | signature is '...' => '[*]'
   | matches = signature.match /\.{3}(.*)/ => "[#{matches.1}]"
   | _ => ensure-tuple signature
 
@@ -18,8 +18,8 @@ class Defs
   add-default: (fn) -> @fns['[*]'] = fn
   add-one: (sig, fn) -> @fns[ensure-valid sig] = fn
   add-more: (map) -> for sig, fn of map then @add-one sig, fn
-  get: (sig) -> @fns[ensure-valid sig]
-  contains: (sig) -> (@get sig)?
+  get: (sig) -> @fns[sig]
+  contains: (sig) -> (@get ensure-valid sig)?
 
   throw-unimplemented: (args) ->
     throw new Error "Can't call on #{[.. for args]}: fn requires one of #{@signatures}"
