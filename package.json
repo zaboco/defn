@@ -4,7 +4,7 @@
   "description": "defn module",
   "dependencies": {
     "prelude-ls": "~1.0.0",
-    "type-check": "~0.1.0"
+    "type-precedence": "~0.1.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

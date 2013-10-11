@@ -1,4 +1,4 @@
-require! './type-precedence' .best-type
+require! 'type-precedence' .best-type
 
 function ensure-tuple (signature='')
   signature.replace /^([^(].*)/ "($1)"
