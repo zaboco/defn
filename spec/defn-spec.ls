@@ -83,7 +83,7 @@ describe 'defn.init' ->
     that 'cannot call anything else' ->
       expect fn.can-call \2 .to.be.false
     that 'calling something else throws error' ->
-      expect fn .called-with \2 .to.throw 'Unimplemented: fn requires one of (Number)'
+      expect fn .called-with \2 .to.throw "Can't call on 2: fn requires one of (Number)"
 
   describe '#define more' ->
     spy = {}

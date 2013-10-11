@@ -18,11 +18,11 @@ class Defs
   get: (sig) -> @fns[ensure-tuple sig]
   contains: (sig) -> (@get sig)?
 
-  throw-unimplemented: ->
-    throw new Error "Unimplemented: fn requires one of #{@signatures}"
+  throw-unimplemented: (args) ->
+    throw new Error "Can't call on #{[.. for args]}: fn requires one of #{@signatures}"
   signature-of: (args)-> best-type in: @signatures, matching: args
   get-impl-for: (args) ->
-    @get @signature-of args or @throw-unimplemented!
+    @get @signature-of args or @throw-unimplemented args
   apply: (obj, args) -> (@get-impl-for args).apply obj, args
 
 class Defn
