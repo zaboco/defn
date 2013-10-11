@@ -3,6 +3,10 @@ require! './type-precedence' .best-type
 function ensure-tuple (signature='')
   signature.replace /^([^(].*)/ "($1)"
 
+function ensure-valid (signature='') then switch
+  | signature in <[... [*]]> => '[*]'
+  | _ => ensure-tuple signature
+
 class Defs
   -> @fns = {}
   signatures:~ -> Object.keys @fns
@@ -10,10 +14,10 @@ class Defs
     | \Function => @add-default &0
     | \String => @add-one &0, &1
     | \Object => @add-more &0
-  add-default: (fn) -> @fns['(*)'] = fn
-  add-one: (sig, fn) -> @fns[ensure-tuple sig] = fn
+  add-default: (fn) -> @fns['[*]'] = fn
+  add-one: (sig, fn) -> @fns[ensure-valid sig] = fn
   add-more: (map) -> for sig, fn of map then @add-one sig, fn
-  get: (sig) -> @fns[ensure-tuple sig]
+  get: (sig) -> @fns[ensure-valid sig]
   contains: (sig) -> (@get sig)?
 
   throw-unimplemented: (args) ->
