@@ -96,6 +96,22 @@ describe 'defn.init' ->
     that 'calling something else throws error' ->
       expect fn .called-with \2 .to.throw "Can't call on 2: fn requires one of (Number)"
 
+  describe '#define one w/ ...String signature' ->
+    before-each ->
+      fn.define \...String (n) -> n + 1
+    that 'signatures is [[String]]' ->
+      expect fn.signatures! .to.eql <[ [String] ]>
+    that.skip 'has signature ...String' ->
+      expect fn.has-signature '...String' .to.be.true
+    that.skip 'can call any number of strings' ->
+      expect fn.can-call undefined .to.be.true
+      expect fn.can-call \a .to.be.true
+      expect fn.can-call \a, \b .to.be.true
+    that.skip 'cannot call anything else' ->
+      expect fn.can-call 2 .to.be.false
+    that.skip 'calling something else throws error' ->
+      expect fn .called-with 1 .to.throw "Can't call on 1: fn requires one of [String]"
+
   describe '#define more' ->
     spy = {}
     before-each ->

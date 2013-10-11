@@ -5,6 +5,7 @@ function ensure-tuple (signature='')
 
 function ensure-valid (signature='') then switch
   | signature in <[... [*]]> => '[*]'
+  | matches = signature.match /\.{3}(.*)/ => "[#{matches.1}]"
   | _ => ensure-tuple signature
 
 class Defs
