@@ -1,13 +1,11 @@
 require! './type-precedence' .best-type
 
-{keys, find} = require \prelude-ls
-
 function ensure-tuple (signature='')
   signature.replace /^([^(].*)/ "($1)"
 
 class Defs
   -> @fns = {}
-  signatures:~ -> keys @fns
+  signatures:~ -> Object.keys @fns
   add: -> switch typeof! &0
     | \Function => @add-default &0
     | \String => @add-one &0, &1
