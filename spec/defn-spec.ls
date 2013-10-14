@@ -14,7 +14,7 @@ chai.use sinon-chai
 expect = chai.expect
 
 /*
-  fn = defn.init
+  fn = defn!
 
   fn.signatures
   fn.has-signature (sig)
@@ -26,9 +26,9 @@ expect = chai.expect
 */
 
 that = it
-describe 'defn.init' ->
+describe 'defn simple' ->
   var fn
-  before-each -> fn := defn.init!
+  before-each -> fn := defn!
   that 'has method #signatures' ->
     expect fn.signatures .to.be.a \Function
   that 'has method #has-signature' ->

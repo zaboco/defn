@@ -47,7 +47,4 @@ defn = (...args) ->
   fn = init!
   fn.overload.apply fn, args
 
-defn.init = init
-
 module.exports = defn
-
