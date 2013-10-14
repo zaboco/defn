@@ -1,6 +1,6 @@
 {
   "name": "defn",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "flexible function type-based overloading",
   "dependencies": {
     "type-precedence": "~0.1.0"
