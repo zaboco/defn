@@ -8,11 +8,11 @@ $ npm install defn
 ## Signature definition
 `defn` supports all the [types that can be checked with `type-check`](https://github.com/gkz/type-check#type-format) for arguments signature. It assumes that the signature is a tuple, but the pharantesis are not required. So, `(Number, Number)` and `Number, Number` are equivalent. However, a special type notation is added, `...Type`, which means that all the arguments are of type `Type` (`...` matches any arguments with any type). So, here are few examples of signatures:
 
-* `...` - translates to `[*]` -> matches anything
-* `...String` - translated to `[String]` -> matches `f(\a)`, `f(\a, \b)`, etc
-* `[*]` - translates to `([*])` -> matches `f([1 2 3])`, but doesn't match `f(1, 2, 3)`
-* `Number | String` -> matches `f(1)` or `f(\a)`, but not `f(1, \a)`
-* `{x: Number, y: Number}` -> matches `f({x: 1, y: 1})`
+* `...` (translates to `[*]`) - matches anything
+* `...String` (translates to `[String]`) - matches `f(\a)`, `f(\a, \b)`, etc
+* `[*]` (translates to `([*])`) - matches `f([1 2 3])`, but doesn't match `f(1, 2, 3)`
+* `Number | String` - matches `f(1)` or `f(\a)`, but not `f(1, \a)`
+* `{x: Number, y: Number}` - matches `f({x: 1, y: 1})`
 
 ## Usage
 ```ls
