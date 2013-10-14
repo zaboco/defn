@@ -1,9 +1,8 @@
 {
   "name": "defn",
   "version": "0.1.0",
-  "description": "defn module",
+  "description": "flexible function type-based overloading",
   "dependencies": {
-    "prelude-ls": "~1.0.0",
     "type-precedence": "~0.1.0"
   },
   "devDependencies": {
@@ -31,8 +30,10 @@
     "url": "git@github.com:zaboco/defn.git"
   },
   "keywords": [
-    "util",
-    "library"
+    "def",
+    "overload",
+    "function",
+    "type"
   ],
   "author": "Bogdan Zaharia",
   "license": "MIT",
