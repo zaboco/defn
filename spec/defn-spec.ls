@@ -20,9 +20,9 @@ expect = chai.expect
   fn.has-signature (sig)
   fn.can-call (args)
 
-  fn.define [fn:Function]
-  fn.define [signature:String], [fn:Function]
-  fn.define [signatures-map:Object]
+  fn.overload [fn:Function]
+  fn.overload [signature:String], [fn:Function]
+  fn.overload [signatures-map:Object]
 */
 
 that = it
@@ -45,10 +45,10 @@ describe 'defn.init' ->
   that 'has method #apply' ->
     expect fn.apply .to.be.a \Function
 
-  describe '#define one w/o signature' ->
+  describe '#overload one w/o signature' ->
     var spy
     before-each ->
-      fn.define spy := sinon.spy!
+      fn.overload spy := sinon.spy!
     that 'signatures is [[*]]' ->
       expect fn.signatures! .to.eql <[ [*] ]>
     that 'has signature ...' ->
@@ -59,19 +59,19 @@ describe 'defn.init' ->
     that 'calling redirects to the defined fn' ->
       fn 1; expect spy .to.have.been.called
 
-  describe '#define fn with @ inside' ->
+  describe '#overload fn with @ inside' ->
     var impl
     before-each ->
-      fn.define impl := -> "#@:#it"
+      fn.overload impl := -> "#@:#it"
     that 'can use with Function.call' ->
       expect fn.call \x, 1 .to.eql "x:1"
     that 'can use with Function.apply' ->
       expect fn.apply \x, [1] .to.eql "x:1"
 
-  describe '#define one w/ ... signature' ->
+  describe '#overload one w/ ... signature' ->
     var spy
     before-each ->
-      fn.define '...', spy := sinon.spy!
+      fn.overload '...', spy := sinon.spy!
     that 'signatures is [[*]]' ->
       expect fn.signatures! .to.eql <[ [*] ]>
     that 'has signature ...' ->
@@ -80,9 +80,9 @@ describe 'defn.init' ->
       expect fn.can-call 1, 2 .to.be.true
       expect fn.can-call undefined .to.be.true
 
-  describe '#define one w/ signature' ->
+  describe '#overload one w/ signature' ->
     before-each ->
-      fn.define \Number (n) -> n + 1
+      fn.overload \Number (n) -> n + 1
     that 'signatures is [(Number)]' ->
       expect fn.signatures! .to.eql <[ (Number) ]>
     that 'has signature (Number)' ->
@@ -96,9 +96,9 @@ describe 'defn.init' ->
     that 'calling something else throws error' ->
       expect fn .called-with \2 .to.throw "Can't call on 2: fn requires one of (Number)"
 
-  describe '#define one w/ ...String signature' ->
+  describe '#overload one w/ ...String signature' ->
     before-each ->
-      fn.define \...String (...args) -> "#args are string"
+      fn.overload \...String (...args) -> "#args are string"
     that 'signatures is [[String]]' ->
       expect fn.signatures! .to.eql <[ [String] ]>
     that 'has signature ...String' ->
@@ -114,10 +114,10 @@ describe 'defn.init' ->
     that 'calling it works' ->
       expect fn \s .to.be.ok
 
-  describe '#define more' ->
+  describe '#overload more' ->
     spy = {}
     before-each ->
-      fn.define do
+      fn.overload do
         Number: spy.number := sinon.spy!
         String: spy.string := sinon.spy!
         '*': spy.default := sinon.spy!
@@ -139,8 +139,8 @@ describe 'defn' ->
   describe 'chain' ->
     before-each ->
       fn := defn 'Number' -> 1
-        .define 'String' -> \s
-        .define '[*]' -> \array
+        .overload 'String' -> \s
+        .overload '[*]' -> \array
     that 'has Number signature' ->
       expect fn.has-signature \Number .to.be.true
     that 'has String signature' ->
